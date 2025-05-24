@@ -3,9 +3,7 @@ _base_ = 'mmdetection/configs/sparse_rcnn/sparse-rcnn_r50_fpn_1x_coco.py'
 # bs4: 7+3=10mins
 # bs8: 6+3=9mins
 # bs16: 5+3=8mins
-# 每4h: 240mins
-# 考虑bs8, 训练50, 每4h大概确保能够训练25个
-# 考虑训练60+epoch
+
 
 resume = 'auto'
 max_epochs = 30
@@ -30,7 +28,7 @@ classes = ('aeroplane', 'bicycle', 'bird', 'boat', 'bottle',
 
 train_dataloader = dict(
     batch_size=batch_size,
-    persistent_workers=True,  # 加速数据加载
+    persistent_workers=True,  
     sampler=dict(type='DefaultSampler', shuffle=True),
     dataset=dict(
         type=dataset_type,
@@ -122,13 +120,13 @@ val_cfg = dict(type='ValLoop')
 test_cfg = dict(type='TestLoop')
 
 
-# optimizer
 optim_wrapper = dict(
     optimizer=dict(
         _delete_=True, type='AdamW', lr=lr_base, weight_decay=0.0001),
     clip_grad=dict(max_norm=1, norm_type=2)
 )
-# 学习率调度（缩短热身期）
+
+
 param_scheduler = [
     dict(
         type='LinearLR',
@@ -139,13 +137,12 @@ param_scheduler = [
     dict(
         type='MultiStepLR',
         by_epoch=True,
-        milestones=[mstone_first,mstone_second],  # 学习率衰减节点
+        milestones=[mstone_first,mstone_second],
         gamma=0.1)
 ]
 
 default_hooks = dict(checkpoint=dict(type="CheckpointHook", interval=1))
 
-# TensorBoard日志
 vis_backends = [dict(type='TensorboardVisBackend')]
 visualizer = dict(
     type='DetLocalVisualizer',
