@@ -3,7 +3,6 @@ _base_ = 'mmdetection/configs/mask_rcnn/mask-rcnn_r50_fpn_amp-1x_coco.py'
 
 # bs8:
 # bs16: 10+5=15mins
-# 4h约处理20个;
 
 # hyperparams:
 resume = 'auto'
@@ -130,10 +129,8 @@ model = dict(
     )
 )
 
-# 学习率自动缩放
 auto_scale_lr = dict(base_batch_size=16, enable=False)
 
-# # 优化器配置 (启用混合精度训练)
 optim_wrapper = dict(
     type='AmpOptimWrapper',
     optimizer=dict(
@@ -145,12 +142,12 @@ optim_wrapper = dict(
     clip_grad=None
 )
 
-# learning rate
+
 param_scheduler = [
     dict(
-    type='LinearLR',  # 使用线性学习率预热
-    start_factor=0.001, # 学习率预热的系数
-    by_epoch=False,  # 按 iteration 更新预热学习率
+    type='LinearLR',  
+    start_factor=0.001, 
+    by_epoch=False,  
     begin=0, 
     end=800), 
     dict(
@@ -158,10 +155,10 @@ param_scheduler = [
         begin=0,
         end=max_epochs,
         by_epoch=True,
-        milestones=[mstone_first,mstone_second],  # 在..个 epoch 降低学习率
+        milestones=[mstone_first,mstone_second], 
         gamma=0.1)
 ]
-# 训练和测试配置
+
 train_cfg = dict(
     type='EpochBasedTrainLoop',
     max_epochs=max_epochs,
@@ -171,10 +168,8 @@ val_cfg = dict(type='ValLoop')
 test_cfg = dict(type='TestLoop')
 
 
-# 日志配置
 default_hooks = dict(checkpoint=dict(type="CheckpointHook", interval=1))
 
-# 可视化配置
 vis_backends = [
     dict(type='TensorboardVisBackend')
 ]
@@ -184,7 +179,6 @@ visualizer = dict(
     name='visualizer'
 )
 
-# 工作目录设置
 work_dir = 'work_dirs/mask_rcnn'
 
 
